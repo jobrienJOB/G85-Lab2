@@ -16,6 +16,7 @@ public class RangeTest {
 	private Range constrainRangeObjectUnderTest;
 	private Range expandRangeObjectUnderTest;
 	private Range expectedExpandedRange;
+	private Range range;
 
 	@Before
 	public void setUp() throws Exception {
@@ -23,6 +24,7 @@ public class RangeTest {
 		constrainRangeObjectUnderTest = new Range(-5.00, 5.00);
 		expandRangeObjectUnderTest = new Range(-7.5, 12.0);
 		expectedExpandedRange = new Range(-7.5, 12);
+		range = new Range(-5, 5);
 
 	}
 
@@ -32,9 +34,81 @@ public class RangeTest {
 		constrainRangeObjectUnderTest = null;
 		expandRangeObjectUnderTest = null;
 		expandRangeObjectUnderTest = null;
+		range = null;
+	}
+	@Test
+	public void testGetLengthReturns3WhenRangeHasBothPositiveValues() {
+		Range r1 = new Range(5, 8);
+		assertEquals("getLength did not return 3.0", 3.0, r1.getLength(), 0.000000001d);
+	}
+	@Test
+	public void testGetLengthReturns12WhenRangeHasBothNegativeValues() {
+		Range r1 = new Range(-15, -3);
+		assertEquals("getLength did not return 12.0", 12.0, r1.getLength(), 0.000000001d);
 	}
 
+	@Test
+	public void testGetLengthReturns7WhenRangeValueOnLeftIsNegativeAndRangeValueOnRightIsPositive() {
+		Range r1 = new Range(-1, 6);
+		assertEquals("getLength did not return 7.0", 7.0, r1.getLength(), 0.000000001d);
+	}
+
+	@Test
+	public void testGetLengthReturns0WhenBothPositiveRangeValuesAreEqual() {
+		Range r1 = new Range(24, 24);
+		assertEquals("getLength did not return 0.0", 0.0, r1.getLength(), 0.000000001d);
+	}
+
+	@Test
+	public void testGetLengthReturns0WhenBothNegativeRangeValuesAreEqual() {
+		Range r1 = new Range(-18, -18);
+		assertEquals("getLength did not return 0.0", 0.0, r1.getLength(), 0.000000001d);
+	}
+
+	@Test
+	public void testContainsReturnsTrueWhenBooleanMethodPassesInAValidValue() {
+		assertEquals("contains method did not return true", true, range.contains(0.5));
+	}
+
+	@Test
+	public void testContainsReturnsFalseWhenValueOnLeftIsOutsideTheRange() {
+		assertEquals("contains method did not return false", false, range.contains(-8.0));
+	}
+
+	@Test
+	public void testContainsReturnsFalseWhenValueOnRightIsOutsideTheRange() {
+		assertEquals("contains method did not return false", false, range.contains(10.4));
+	}
 	
+	@Test
+	public void testContainsReturnsTrueWhenValueIsEqualToLowerBoundary() {
+		assertEquals("contains method did not return true", true, range.contains(-5.0));
+	}
+
+	@Test
+	public void testContainsTrueWhenValueIsEqualToUpperBoundary() {
+		assertEquals("contains method did not return true", true, range.contains(5.0));
+	}
+
+	@Test
+	public void testContainsReturnsFalseWhenBoundaryValueIsANegativeUpperValue() {
+		assertEquals("contains method did not return false", false, range.contains(-5.01));
+	}
+
+	@Test
+	public void testContainsReturnsTrueWhenBoundaryValueIsANegativeLowerValue() {
+		assertEquals("contains method did not return true", true, range.contains(-4.99));
+	}
+	
+	@Test
+	public void testContainsReturnsTrueWhenBoundaryValueIsAPositiveLowerValue() {
+		assertEquals("contains method did not return true", true, range.contains(4.99));
+	}
+
+	@Test
+	public void testContainsReturnsFalseWhenBoundaryValueIsAPositiveUpperValue() {
+		assertEquals("contains method did not return false", false, range.contains(5.01));
+	}
 
 	/*
 	 * 
@@ -154,6 +228,67 @@ public class RangeTest {
 		} catch (Exception e) {
 			assertTrue("Incorrect exception type thrown", e.getClass().equals(NullPointerException.class));
 
+		}
+	}
+	//
+	//
+	// getUpperBound() Tests
+	//
+	//
+	
+	@Test
+	public void testGetUpperBoundUpperLowerBothPositiveShouldReturnUpper() {
+		
+		rangeObjectUnderTest = new Range(5, 17);
+		assertEquals("getLowerBound: Did not return the expected output",17.0, rangeObjectUnderTest.getUpperBound(),
+				0.000000001d);
+		
+	}
+	
+	@Test
+	public void testGetUpperBoundUpperLowerBothNegativewShouldReturnUpper() {
+		
+		rangeObjectUnderTest = new Range(-32, -4);
+		assertEquals("getLowerBOund: Did not return the expected output",-4.0, rangeObjectUnderTest.getUpperBound(),
+				0.000000001d);
+		
+	}
+	
+	@Test
+	public void testGetUpperBoundLowerNegativeUpperPositiveShouldReturnUpper() {
+		
+		rangeObjectUnderTest = new Range(-1, 6);
+		assertEquals("getLowerBound: Did not return the expected output", 6.0, rangeObjectUnderTest.getUpperBound(), 0.000000001d);
+		
+	}
+	
+	@Test
+	public void testGetUpperBoundUpperLowerEqualAndPositiveShouldReturnCorrectValue() {
+		
+		rangeObjectUnderTest = new Range(91, 91);
+		assertEquals("getLowerBOund: Did not return the expected output", 91.0, rangeObjectUnderTest.getUpperBound(), 0.000000001d);
+		
+	}
+	
+	@Test
+	public void testGetUpperBoundUpperLowerEqualAndNegativeShouldReturnCorrectValue() {
+		
+		rangeObjectUnderTest = new Range(-78, -78);
+		assertEquals("getLowerBound: Did not return the expected output", -78.0, rangeObjectUnderTest.getUpperBound(),
+				0.000000001d);
+		
+	}
+	
+	@Test
+	public void testGetUpperBoundNullRangeShouldThrowException() {
+		
+		rangeObjectUnderTest = null;
+		try {
+			rangeObjectUnderTest.getUpperBound();
+			fail("No exception thrown-Expected outcome was: a thrown exception of type: NullPointerException");
+		} catch (Exception e) {
+			assertTrue("Incorrect exception type thrown", e.getClass().equals(NullPointerException.class));
+			
 		}
 	}
 	

@@ -4,7 +4,6 @@ import static org.junit.Assert.*;
 
 import java.security.InvalidParameterException;
 
-import javax.print.attribute.standard.OutputDeviceAssigned;
 
 import org.jfree.data.DataUtilities;
 import org.jfree.data.DefaultKeyedValues;
@@ -24,6 +23,8 @@ public class DataUtilitiesTest {
 	private double[][] testArray2D;
 	private KeyedValues keyedValues;
 	private KeyedValues negKeyedValues;
+	private Values2D values2DColumn;
+	private Values2D values2DRow;
 
 	@Before
 	public void setUp() throws Exception {
@@ -42,6 +43,27 @@ public class DataUtilitiesTest {
 		testKeyedValues2.addValue(0, (Number) (-3.0));
 		testKeyedValues2.addValue(1, (Number) (8.0));
 		testKeyedValues2.addValue(2, (Number) (-4.0));
+		DefaultKeyedValues2D testValuesColumn = new DefaultKeyedValues2D();
+		values2DColumn = testValuesColumn;
+		testValuesColumn.addValue(1, 1, 1);
+		testValuesColumn.addValue(4, 1, 2);
+		testValuesColumn.addValue(7, 1, 3);
+
+		testValuesColumn.addValue(3, 2, 1);
+		testValuesColumn.addValue(9, 2, 2);
+		testValuesColumn.addValue(4, 2, 3);
+
+		DefaultKeyedValues2D testValuesRow = new DefaultKeyedValues2D();
+
+		values2DRow = testValuesRow;
+		testValuesRow.addValue(1, 1, 1);
+		testValuesRow.addValue(3, 1, 2);
+
+		testValuesRow.addValue(4, 2, 1);
+		testValuesRow.addValue(9, 2, 2);
+
+		testValuesRow.addValue(7, 3, 1);
+		testValuesRow.addValue(4, 3, 2);
 	}
 
 	@After
@@ -50,6 +72,8 @@ public class DataUtilitiesTest {
 		testArray2D = null;
 		keyedValues = null;
 		negKeyedValues = null;
+		values2DColumn = null;
+		values2DRow = null;
 
 	}
 
@@ -187,4 +211,131 @@ public class DataUtilitiesTest {
 		}
 	}
 
+	@Test
+	public void testCalculateColumnTotalReturns0WhenAnInvalidColumnIsSpecified() {
+		try {
+			assertEquals("Wrong sum returned - it should be 0", 0,
+					DataUtilities.calculateColumnTotal(values2DColumn, 3), 0.000000001d);
+		} catch (Exception e) {
+			fail("Exception thrown");
+		}
+
+	}
+
+	@Test
+	public void testCalculateColumnTotalReturns13WhenColumnIndexIs1() {
+		assertEquals("Wrong sum returned - it should be 13", 13, DataUtilities.calculateColumnTotal(values2DColumn, 1),
+				0.000000001d);
+	}
+
+	@Test
+	public void testCalculateColumnTotalReturns0WhenInvalidColumnIndex3IsSpecified() {
+		try {
+			assertEquals("Wrong sum returned - it should be 0", 0,
+					DataUtilities.calculateColumnTotal(values2DColumn, 3), 0.000000001d);
+		} catch (Exception e) {
+			fail("Exception thrown");
+		}
+	}
+
+	@Test
+	public void testCalculateColumnTotalReturns4WhenColumnIndexIs0() {
+		assertEquals("Wrong sum returned - it should be 4", 4, DataUtilities.calculateColumnTotal(values2DColumn, 0),
+				0.000000001d);
+	}
+
+	@Test
+	public void testColumnTwoTotalReturns11WhenColumnIndexIs2() {
+		try {
+			assertEquals("Wrong sum returned - it should be 11", 11,
+					DataUtilities.calculateColumnTotal(values2DColumn, 2), 0.000000001d);
+		} catch (Exception e) {
+			fail("Exception thrown");
+		}
+	}
+
+	@Test
+	public void testCalculateColumnTotalReturnsInvalidParameterExceptionWhenNullValueIsPassedIn() {
+		try {
+			DataUtilities.calculateColumnTotal(null, 1);
+			fail("Did not throw an exception");
+
+		} catch (Exception e) {
+			assertTrue("Did not throw expected exception type", e.getClass().equals(InvalidParameterException.class));
+		}
+	}
+
+	@Test
+	public void testCalculateColumnTotalReturns0WhenKeyedValues2DIsEmpty() {
+		DefaultKeyedValues2D testEmpty = new DefaultKeyedValues2D();
+		values2DColumn = testEmpty;
+		assertEquals("Wrong sum returned - it should be 0", 0, DataUtilities.calculateColumnTotal(values2DColumn, 0),
+				0.000000001d);
+	}
+
+	@Test
+	public void testCalculateRowTotalReturns0WhenRowNegative1IndexIsSpecified() {
+		try {
+			assertEquals(0, DataUtilities.calculateRowTotal(values2DRow, -1), 0.000000001d);
+		} catch (Exception e) {
+			fail("Exception thrown");
+		}
+	}
+
+	@Test
+	public void testCalculateRowTotalReturns13WhenRowIndexIsOne() {
+		assertEquals("Wrong sum returned - it should be 13", 13.0, DataUtilities.calculateRowTotal(values2DRow, 1),
+				0.000000001d);
+	}
+
+	@Test
+	public void testCalculateRowTotalReturns0WhenRowIndexIsThree() {
+		try {
+			assertEquals("Wrong sum returned - it should be 0", 0, DataUtilities.calculateRowTotal(values2DRow, 3), 0.000000001d);
+		} catch (Exception e) {
+			fail("Exception thrown");
+		}
+	}
+
+	@Test
+	public void testCalculateRowTotalReturns4WhenRowIndexIs0() {
+		try {
+			assertEquals("Wrong sum returned - it should be 4", 4, DataUtilities.calculateRowTotal(values2DRow, 0), 0.000000001d);
+		} catch (Exception e) {
+			fail("Exception thrown");
+		}
+	}
+
+	@Test
+	public void testCalculateRowTotalReturns11WhenRowIndex2() {
+		try {
+			assertEquals("Wrong sum returned - it should be 11", 11, DataUtilities.calculateRowTotal(values2DRow, 2), 0.000000001d);
+		} catch (Exception e) {
+			fail("Exception thrown");
+		}
+	}
+	
+	//This test should return 0. However, it returns a NullPointerException, 
+	//therefore, in order to have a valid test - we must catch an exception before the test
+	//is classed as an error.
+	@Test
+	public void testCalculateRowTotalReturns0WhenNullValueIsPassedIn() {
+		try {
+			assertEquals("Wrong sum returned - it should be 0", 0, DataUtilities.calculateRowTotal(null, 0), 0.000000001d);
+
+		} catch (Exception e) {
+			fail("Exception thrown");
+		}
+	}
+
+	@Test
+	public void testCalculateRowTotalReturns0WhenRowIndexIs0() {
+		try {
+			DefaultKeyedValues2D testEmpty = new DefaultKeyedValues2D();
+			values2DRow = testEmpty;
+			assertEquals("Wrong sum returned - it should be 0",0, DataUtilities.calculateRowTotal(values2DRow, 0), 0.000000001d);
+		} catch (Exception e) {
+			fail("Exception thrown");
+		}
+	}
 }
